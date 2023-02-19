@@ -45,9 +45,10 @@ public class HeroiController {
     public String atualizar(@PathVariable Integer indice, @PathVariable String nome, @PathVariable String habilidade,
                             @PathVariable Integer idade, @PathVariable Double forca, @PathVariable Boolean vivo){
         if (nome != null && habilidade != null && idade != null && forca != null && vivo != null){
+
             Heroi heroi = new Heroi(nome, idade, habilidade, forca, vivo);
 
-            herois.add(indice, heroi);
+            herois.set(indice, heroi);
 
             return "Herói Cadastrado com Sucesso";
         }
@@ -57,9 +58,15 @@ public class HeroiController {
     @GetMapping("/remover/{indice}")
     public String remover(@PathVariable Integer indice){
         if (indice >= 0 && indice < herois.size()){
-            herois.remove(indice);
+
+            for (int i = 0; i < herois.size(); i++){
+                if (i == indice){
+                    herois.remove(i);
+                }
+            }
+
             return "Herói removido.";
         }
-        return "Nenhum herói encontrado com o indice indicado./";
+        return "Nenhum herói encontrado com o indice indicado.";
     }
 }
