@@ -7,8 +7,8 @@ public class Usuario {
     private boolean autenticado;
 
     public Usuario(){
-
     }
+
     public Usuario(String nome, String email, String senha, boolean autenticado) {
         this.nome = nome;
         this.email = email;
