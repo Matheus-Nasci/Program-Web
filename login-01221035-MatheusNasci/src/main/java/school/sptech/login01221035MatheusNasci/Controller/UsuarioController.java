@@ -29,7 +29,9 @@ public class UsuarioController {
 
     @PostMapping
     public void cadastrar(@RequestBody Usuario novoUsuario) {
-        listaUsuarios.add(novoUsuario);
+        if(novoUsuario != null){
+            listaUsuarios.add(novoUsuario);
+        }
     }
 
     @PostMapping("autenticacao/{email}/{senha}")
@@ -57,17 +59,56 @@ public class UsuarioController {
         return String.format("Usuário %s não encontrado", email);
     }
 
+    //Remover um usuário passando email como parâmetro.
     @DeleteMapping("/{email}")
-    public void remover(@PathVariable String email){
+    public String remover(@PathVariable String email){
         for (Usuario u : listaUsuarios){
             if (u.getEmail().equals(email)) {
                 listaUsuarios.remove(u);
+                return (String.format("Usuário %s foi removido.", email));
             }
         }
+        return (String.format("Usuário %s .", email));
     }
 
-    @PutMapping("")
-    public void atualizar(@RequestBody Usuario usuarioAtualizado){
+    //Só consegue atualizar depois de autenticar o usuário.
+    //Atualizar o usuário tanto senha quanto email.
+    @PutMapping("/{email}")
+    public String atualizar(@PathVariable String email, @RequestBody Usuario usuario){
+        for (int i = 0; i < listaUsuarios.size(); i++) {
+            for (Usuario u : listaUsuarios){
+                if (u.getEmail().equals(email) && u.getAutenticado() == true) {
+                    listaUsuarios.add(i, usuario);
+                    return("Usuário atualizado.");
+                }
+            }
+        }
+        return("Usuário não encontrado.");
+    }
 
+    //Buscar o usuário passando somente o email como parâmetro.
+    @GetMapping("/{email}")
+    public UsuarioDto buscarPorEmail(@PathVariable String email){
+        for (Usuario u : listaUsuarios){
+            if(u.getEmail().equals(email)){
+                return new UsuarioDto(u);
+            }
+        }
+        return null;
+    }
+
+    //Buscar total de usuário autenticados e não autenticados.
+    @GetMapping("/autenticados")
+    public String buscarTotalAutenticado(){
+        Integer contadorAutenticado = 0;
+        Integer contadorNotAutenticado = 0;
+        for (Usuario u : listaUsuarios){
+            if (u.getAutenticado() == true){
+                contadorAutenticado++;
+            } else {
+                contadorNotAutenticado++;
+            }
+        }
+        return String.format("Usuários autenticados: %d \nUsuários não autenticados: %d", contadorAutenticado, contadorNotAutenticado);
     }
 }
